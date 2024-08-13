@@ -1,0 +1,7 @@
+prompt 1 
+
+write a html site that has a fuulscreen iframe that has z index of 15 and has a custom dialog scrren that appears  when key 92 is pressed with z index 20 and have 4 buttons one will refresh iframe content one will go back and one will undo go back  and use table to have every url it enters saved and also add a button that prompts new url / search and the answer isnt url search that on google in the iframe and also round corners on custom prompt box thingy and otherwise set iframe url to that url
+
+prompt 2 
+
+i dont want to see the url visited thing
