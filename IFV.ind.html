@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Iframe with Custom Dialog</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 15;
+        }
+        #dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 20;
+            display: none;
+        }
+        #dialog button {
+            margin: 5px;
+        }
+        table {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+            z-index: 10;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+<iframe id="iframe" src="google.com"></iframe>
+
+<div id="dialog">
+    <button id="refreshBtn">Refresh</button>
+    <button id="backBtn">Go Back</button>
+    <button id="undoBtn">Undo Go Back</button>
+    <button id="searchBtn">Search</button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Visited URLs</th>
+        </tr>
+    </thead>
+    <tbody id="urlTable">
+    </tbody>
+</table>
+
+<script>
+    let urlHistory = [];
+    let historyIndex = -1;
+    const iframe = document.getElementById('iframe');
+    const dialog = document.getElementById('dialog');
+    const urlTable = document.getElementById('urlTable');
+
+    function updateUrlTable(url) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.textContent = url;
+        row.appendChild(cell);
+        urlTable.appendChild(row);
+    }
+
+    function showDialog() {
+        dialog.style.display = 'block';
+    }
+
+    function hideDialog() {
+        dialog.style.display = 'none';
+    }
+
+    function refreshIframe() {
+        iframe.contentWindow.location.reload();
+    }
+
+    function goBack() {
+        if (historyIndex > 0) {
+            historyIndex--;
+            iframe.src = urlHistory[historyIndex];
+        }
+    }
+
+    function undoGoBack() {
+        if (historyIndex < urlHistory.length - 1) {
+            historyIndex++;
+            iframe.src = urlHistory[historyIndex];
+        }
+    }
+
+    function search() {
+        const searchTerm = prompt('Enter URL or search term:');
+        if (searchTerm) {
+            const url = searchTerm.includes(' ') ? `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}` : searchTerm;
+            iframe.src = url;
+            if (urlHistory[historyIndex] !== url) {
+                urlHistory = urlHistory.slice(0, historyIndex + 1);
+                urlHistory.push(url);
+                historyIndex = urlHistory.length - 1;
+                updateUrlTable(url);
+            }
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 92) { // Key code for '\'
+            showDialog();
+        }
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshIframe);
+    document.getElementById('backBtn').addEventListener('click', goBack);
+    document.getElementById('undoBtn').addEventListener('click', undoGoBack);
+    document.getElementById('searchBtn').addEventListener('click', search);
+
+    iframe.addEventListener('load', function() {
+        if (iframe.src !== 'about:blank') {
+            if (urlHistory[historyIndex] !== iframe.src) {
+                urlHistory = urlHistory.slice(0, historyIndex + 1);
+                urlHistory.push(iframe.src);
+                historyIndex = urlHistory.length - 1;
+                updateUrlTable(iframe.src);
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
