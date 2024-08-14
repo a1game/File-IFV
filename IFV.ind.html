@@ -56,7 +56,7 @@
 </head>
 <body>
 
-<iframe id="iframe" src="google.com"></iframe>
+<iframe id="iframe" src="https://google.com"></iframe>
 
 <div id="dialog">
     <button id="refreshBtn">Refresh</button>
@@ -132,6 +132,7 @@
 
     document.addEventListener('keydown', function(event) {
         if (event.keyCode === 92) { // Key code for '\'
+            alert("t")
             showDialog();
         }
     });
